@@ -1,0 +1,26 @@
+ssh -i "stock_kafka_mumbai.pem" ec2-user@ec2-65-2-144-6.ap-south-1.compute.amazonaws.com
+wget https://dlcdn.apache.org/kafka/3.7.0/kafka_2.12-3.7.0.tgz
+tar -xzf kafka_2.12-3.7.0.tgz
+--zookeeper
+bin/zookeeper-server-start.sh config/zookeeper.properties
+
+--install java
+ssh -i "stock_kafka_mumbai.pem" ec2-user@ec2-65-2-144-6.ap-south-1.compute.amazonaws.com
+sudo yum install java-11-amazon-corretto
+java --version
+export KAFKA_HEAP_OPTS="-Xmx256M -Xms128M"
+cd kafka_2.12-3.7.0/
+--allow public network to access EC2
+sudo nano config/server.properties
+--kafka server
+bin/kafka-server-start.sh config/server.properties
+
+
+--create topic and producer
+ssh -i "stock_kafka_mumbai.pem" ec2-user@ec2-65-2-144-6.ap-south-1.compute.amazonaws.com
+cd kafka_2.12-3.7.0/
+bin/kafka-topics.sh --create --topic topic1 --bootstrap-server 65.2.144.6:9092 --replication-factor 1 --partitions 1
+bin/kafka-console-producer.sh --topic topic1 --bootstrap-server 65.2.144.6:9092
+
+--consumer
+bin/kafka-console-consumer.sh --topic topic1 --bootstrap-server 65.2.144.6:9092
